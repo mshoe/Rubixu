@@ -2,6 +2,7 @@
 #include "classes.h"
 #include "RenderEngine.h"
 #include "InputEngine.h"
+#include "Rubixu3.h"
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
@@ -35,14 +36,17 @@ public:
 
 	// Our opengl context handle
 	SDL_GLContext mainContext;
-	std::string programName = "Augmented Geometry";
+	std::string programName = "Rubixu";
 	bool SetOpenGLAttributes();
 	void PrintSDL_GL_Attributes();
 	void CheckSDLError(int line);
 
-	//Engines
+	// Engines
 	RenderEngine *render;
 	InputEngine *input;
+
+	// Rubixu Cube
+	Rubixu3 *rubixu3;
 
 	std::chrono::high_resolution_clock::time_point time1;
 	std::chrono::high_resolution_clock::time_point time2;

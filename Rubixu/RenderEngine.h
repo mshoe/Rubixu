@@ -41,6 +41,7 @@ public:
 
 private:
 	Rubixu *rubixu = NULL;
+	Rubixu3 *rubixu3 = NULL;
 	TextEngine *text = NULL;
 	Camera *camera = NULL;
 

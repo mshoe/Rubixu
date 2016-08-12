@@ -19,6 +19,8 @@ void RenderEngine::Init()
 {
 	CleanUp();
 
+	rubixu3 = rubixu->rubixu3;
+
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
 
@@ -30,7 +32,7 @@ void RenderEngine::Init()
 	model = new glm::mat4;
 	camera = new Camera(glm::vec3(0.0f, 0.0f, 10.0f));
 
-	//rotate3(-135.f, 1.f, 0.f, 0.f);
+	rotate3(45.f, 1.f, 1.f, 0.f);
 }
 
 void RenderEngine::CleanUp()
@@ -71,11 +73,10 @@ void RenderEngine::moveCameraDirection(GLfloat xoffset, GLfloat yoffset, GLboole
 
 void RenderEngine::RenderRubixu()
 {
-	std::cout << "rendering rubixu..." << std::endl;
+	//std::cout << "rendering rubixu..." << std::endl;
 
 	// 4 vertices per face, 6 faces per cube
-	// 3 values (xyz) per vertice, 3 values (rgb) per color, 2 values for texture
-	/*std::vector<GLfloat> vertices(4 * 6 * 3 + 4 * 6 * 3 + 4 * 6 * 2);*/
+	// 3 values (xyz) per vertice, 3 values (rgb) per color
 
 	// 6 faces per cube
 	std::vector<GLuint> indices(6 * 6 * 27);
@@ -88,14 +89,11 @@ void RenderEngine::RenderRubixu()
 		indices[i * 6 + 5] = i * 4 + 3;
 	}
 
-	//Cube cube(glm::vec3(0, 0, 0), glm::quat(glm::vec3(glm::radians(45.f), glm::radians(45.f), 0)), glm::vec3(1, 1, 1), 0, glm::vec3(0, 0, 1), 1, glm::vec3(1, 0, 0), 2, 1.f);
-
-	Rubixu3 *rubixu3 = new Rubixu3;
-
 	std::vector<GLfloat> vertices(4 * 3 * 2 * 6 * 27);
 	for (int i = 0; i < 27; i++) {
+		std::vector<GLfloat> temp = (*(rubixu3->cubes))[i]->outputVertices();
 		for (int j = 0; j < 4 * 3 * 2 * 6; j++) {
-			vertices[i * 4 * 3 * 2 * 6 + j] = (*((*(rubixu3->cubes))[i]->vertices))[j];
+			vertices[i * 4 * 3 * 2 * 6 + j] = temp[j];
 		}
 	}
 
@@ -124,36 +122,24 @@ void RenderEngine::RenderRubixu()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
 
-	// Texture attribute
-	/*glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);*/
-
 	glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
 
 	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
 
-	delete rubixu3;
-
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	std::cout << "...complete" << std::endl;
-	
-	/*glm::quat test;
-	std::cout << test.x << test.y << test.z << test.w;*/
-
-	/*glm::quat myQuaternion;
-	myQuaternion = glm::quat(glm::vec3(0, 0, 0));
-	std::cout << myQuaternion.x << myQuaternion.y << myQuaternion.z << myQuaternion.w;*/
+	//std::cout << "...complete" << std::endl;
 }
 
 void RenderEngine::Render()
 {
+	RenderRubixu();
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	(*rubixuShader).Use();
 
-	float angle = rubixu->deltaTime * 45.f;
-	rotate3(angle, 1.f, 1.f, 1.f);
+	//float angle = rubixu->deltaTime * 45.f;
+	//rotate3(angle, 0.f, 1.f, 0.f);
 
 	
 

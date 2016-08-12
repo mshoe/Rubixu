@@ -50,8 +50,10 @@ bool Rubixu::Init()
 	glewInit();
 #endif
 
+	rubixu3 = new Rubixu3;
 	render = new RenderEngine(this);
 	input = new InputEngine(this);
+	
 	return true;
 }
 
@@ -59,6 +61,7 @@ void Rubixu::CleanUp()
 {
 	delete render;
 	delete input;
+	delete rubixu3;
 
 	// Delete our OpengL context
 	SDL_GL_DeleteContext(mainContext);

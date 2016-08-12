@@ -9,7 +9,7 @@ Cube::Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face
 	initVertices();
 
 	// Apply the transformations
-	transform(translation, rotation, scale);
+	Transform(translation, rotation, scale);
 }
 
 Cube::Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face1, glm::vec3 color2, int face2, float scale)
@@ -17,7 +17,7 @@ Cube::Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face
 	initColor(color1, face1);
 	initColor(color2, face2);
 	initVertices();
-	transform(translation, rotation, scale);
+	Transform(translation, rotation, scale);
 }
 
 Cube::Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face1, glm::vec3 color2, int face2, glm::vec3 color3, int face3, float scale)
@@ -26,7 +26,7 @@ Cube::Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face
 	initColor(color2, face2);
 	initColor(color3, face3);
 	initVertices();
-	transform(translation, rotation, scale);
+	Transform(translation, rotation, scale);
 }
 
 Cube::~Cube()
@@ -247,22 +247,22 @@ void Cube::initVertices()
 void Cube::initColor(glm::vec3 color, int face)
 {
 	switch (face) {
-	case FACE_TOP:
+	case FACE_WHITE:
 		color0 = color;
 		break;
-	case FACE_FRONT:
+	case FACE_BLUE:
 		color1 = color;
 		break;
-	case FACE_LEFT:
+	case FACE_RED:
 		color2 = color;
 		break;
-	case FACE_BACK:
+	case FACE_GREEN:
 		color3 = color;
 		break;
-	case FACE_RIGHT:
+	case FACE_ORANGE:
 		color4 = color;
 		break;
-	case FACE_BOTTOM:
+	case FACE_YELLOW:
 		color5 = color;
 		break;
 	default:
@@ -276,18 +276,52 @@ void Cube::CleanUp()
 		delete vertices;
 }
 
-void Cube::transform(glm::vec3 translation, glm::quat rotation, float scale)
+void Cube::Transform(glm::vec3 translation, glm::quat rotation, float scale)
 {
+	this->translation += translation;
 	translationMatrix = glm::translate(translationMatrix, translation);
 	this->rotation = rotation * this->rotation;
 	rotationMatrix = glm::toMat4(this->rotation);
+	this->scale *= scale;
 	scaleMatrix = glm::scale(scaleMatrix, glm::vec3(scale, scale, scale));
-	updateVertices();
+	//updateVertices();
 }
 
-void Cube::updateVertices()
+void Cube::Translate(glm::vec3 translation)
+{
+	this->translation += translation;
+	translationMatrix = glm::translate(translationMatrix, translation);
+	//updateVertices();
+}
+
+void Cube::Rotate(glm::quat rotation)
+{
+	this->rotation = rotation * this->rotation;
+	rotationMatrix = glm::toMat4(this->rotation);
+}
+
+void Cube::Scale(float scale)
+{
+	this->scale *= scale;
+	scaleMatrix = glm::scale(scaleMatrix, glm::vec3(scale, scale, scale));
+}
+
+void Cube::rotateAround(glm::quat rotation, glm::vec3 point)
+{
+	glm::vec3 temp = translation;
+	glm::vec3 temp2 = temp - point;
+	temp2 = rotation * temp2;
+	temp = point + temp2;
+	Translate(-translation);
+	Translate(temp);
+	Rotate(rotation);
+}
+
+std::vector<GLfloat> Cube::outputVertices()
 {
 	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+	std::vector<GLfloat> temp_vertices(4 * 3 * 2 * 6);
 
 	for (int i = 0; i < 24; i++) {
 		glm::vec4 test(
@@ -297,8 +331,13 @@ void Cube::updateVertices()
 			1.f
 		);
 		test = modelMatrix * test;
-		(*vertices)[i * 3 * 2 + 0] = test.x;
-		(*vertices)[i * 3 * 2 + 1] = test.y;
-		(*vertices)[i * 3 * 2 + 2] = test.z;
+		temp_vertices[i * 3 * 2 + 0] = test.x;
+		temp_vertices[i * 3 * 2 + 1] = test.y;
+		temp_vertices[i * 3 * 2 + 2] = test.z;
+		temp_vertices[i * 3 * 2 + 3] = (*vertices)[i * 3 * 2 + 3];
+		temp_vertices[i * 3 * 2 + 4] = (*vertices)[i * 3 * 2 + 4];
+		temp_vertices[i * 3 * 2 + 5] = (*vertices)[i * 3 * 2 + 5];
 	}
+
+	return temp_vertices;
 }

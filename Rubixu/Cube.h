@@ -12,12 +12,12 @@
 #include <vector>
 
 enum face {
-	FACE_TOP = 0,
-	FACE_FRONT = 1,
-	FACE_LEFT = 2,
-	FACE_BACK = 3,
-	FACE_RIGHT = 4,
-	FACE_BOTTOM = 5
+	FACE_WHITE = 0,
+	FACE_BLUE = 1,
+	FACE_RED = 2,
+	FACE_GREEN = 3,
+	FACE_ORANGE = 4,
+	FACE_YELLOW = 5
 };
 
 struct Cube
@@ -35,14 +35,20 @@ public:
 	void CleanUp();
 
 	// Transformations
+	glm::vec3 translation;
 	glm::quat rotation;
+	float scale = 1.f;
 
 	glm::mat4 translationMatrix;
 	glm::mat4 rotationMatrix;
 	glm::mat4 scaleMatrix;
 
-	void transform(glm::vec3 translation, glm::quat rotation, float scale);
-	void updateVertices();
+	void Transform(glm::vec3 translation, glm::quat rotation, float scale);
+	void Translate(glm::vec3 translation);
+	void Rotate(glm::quat rotation);
+	void Scale(float scale);
+	void rotateAround(glm::quat rotation, glm::vec3 point);
+	std::vector<GLfloat> outputVertices();
 
 	std::vector<GLfloat> *vertices = NULL;
 private:

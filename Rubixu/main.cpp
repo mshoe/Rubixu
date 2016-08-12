@@ -4,7 +4,7 @@ Rubixu *rubixu;
 
 int main(int argc, char *argv[])
 {
-	std::cout << "AG v0.001" << std::endl;
+	std::cout << "Rubixu v0.001" << std::endl;
 	rubixu = new Rubixu;
 	if (rubixu->init == -1)
 		return -1;

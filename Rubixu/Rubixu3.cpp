@@ -54,3 +54,147 @@ void Rubixu3::CleanUp()
 		delete cubes;
 	}
 }
+
+void Rubixu3::R()
+{
+	for (int i = 2; i < 27; i += 3) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(glm::radians(-90.f), 0, 0)), glm::vec3(1, 0, 0));
+	}
+
+	applyRotations(2, 8, 26, 20, 5, 17, 23, 11);
+}
+
+void Rubixu3::Ri()
+{
+	for (int i = 2; i < 27; i += 3) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(glm::radians(90.f), 0, 0)), glm::vec3(1, 0, 0));
+	}
+
+	applyRotations(2, 20, 26, 8, 5, 11, 23, 17);
+}
+
+void Rubixu3::L()
+{
+	for (int i = 0; i < 27; i += 3) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(glm::radians(90.f), 0, 0)), glm::vec3(1, 0, 0));
+	}
+
+	applyRotations(6, 0, 18, 24, 3, 9, 21, 15);
+}
+
+void Rubixu3::Li()
+{
+	for (int i = 0; i < 27; i += 3) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(glm::radians(-90.f), 0, 0)), glm::vec3(1, 0, 0));
+	}
+
+	applyRotations(6, 24, 18, 0, 3, 15, 21, 9);
+}
+
+void Rubixu3::U()
+{
+	for (int i = 0; i < 9; i++) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(0, glm::radians(-90.f), 0)), glm::vec3(0, 1, 0));
+	}
+
+	applyRotations(6, 8, 2, 0, 7, 5, 1, 3);
+}
+
+void Rubixu3::Ui()
+{
+	for (int i = 0; i < 9; i++) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(0, glm::radians(90.f), 0)), glm::vec3(0, 1, 0));
+	}
+
+	applyRotations(6, 0, 2, 8, 7, 3, 1, 5);
+}
+
+void Rubixu3::D()
+{
+	for (int i = 18; i < 27; i++) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(0, glm::radians(90.f), 0)), glm::vec3(0, 1, 0));
+	}
+	applyRotations(18, 20, 26, 24, 19, 23, 25, 21);
+}
+
+void Rubixu3::Di()
+{
+	for (int i = 18; i < 27; i++) {
+		(*cubes)[i]->rotateAround(glm::quat(glm::vec3(0, glm::radians(-90.f), 0)), glm::vec3(0, 1, 0));
+	}
+	applyRotations(18, 24, 26, 20, 19, 21, 25, 23);
+}
+
+void Rubixu3::F()
+{
+	for (int k = 0; k < 27; k += 9) {
+		for (int i = 0; i < 3; i++) {
+			(*cubes)[k + i]->rotateAround(glm::quat(glm::vec3(0, 0, glm::radians(-90.f))), glm::vec3(0, 0, 1));
+		}
+	}
+
+	applyRotations(0, 2, 20, 18, 1, 11, 19, 9);
+}
+
+void Rubixu3::Fi()
+{
+	for (int k = 0; k < 27; k += 9) {
+		for (int i = 0; i < 3; i++) {
+			(*cubes)[k + i]->rotateAround(glm::quat(glm::vec3(0, 0, glm::radians(90.f))), glm::vec3(0, 0, 1));
+		}
+	}
+
+	applyRotations(0, 18, 20, 2, 1, 9, 19, 11);
+}
+
+void Rubixu3::B()
+{
+	for (int k = 6; k < 27; k += 9) {
+		for (int i = 0; i < 3; i++) {
+			(*cubes)[k + i]->rotateAround(glm::quat(glm::vec3(0, 0, glm::radians(90.f))), glm::vec3(0, 0, 1));
+		}
+	}
+
+	applyRotations(8, 6, 24, 26, 7, 15, 25, 17);
+}
+
+void Rubixu3::Bi()
+{
+	for (int k = 6; k < 27; k += 9) {
+		for (int i = 0; i < 3; i++) {
+			(*cubes)[k + i]->rotateAround(glm::quat(glm::vec3(0, 0, glm::radians(-90.f))), glm::vec3(0, 0, 1));
+		}
+	}
+	applyRotations(8, 26, 24, 6, 7, 17, 25, 15);
+}
+
+void Rubixu3::applyRotations(int a, int b, int c, int d, int e, int f, int g, int h)
+{
+	Cube *temp1, *temp2;
+
+	temp2 = (*cubes)[a];
+	temp1 = (*cubes)[b];
+	(*cubes)[b] = temp2;
+	temp2 = temp1;
+	temp1 = (*cubes)[c];
+	(*cubes)[c] = temp2;
+	temp2 = temp1;
+	temp1 = (*cubes)[d];
+	(*cubes)[d] = temp2;
+	temp2 = temp1;
+	temp1 = (*cubes)[a];
+	(*cubes)[a] = temp2;
+
+	temp2 = (*cubes)[e];
+	temp1 = (*cubes)[f];
+	(*cubes)[f] = temp2;
+	temp2 = temp1;
+	temp1 = (*cubes)[g];
+	(*cubes)[g] = temp2;
+	temp2 = temp1;
+	temp1 = (*cubes)[h];
+	(*cubes)[h] = temp2;
+	temp2 = temp1;
+	temp1 = (*cubes)[e];
+	(*cubes)[e] = temp2;
+}

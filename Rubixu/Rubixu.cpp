@@ -50,7 +50,10 @@ bool Rubixu::Init()
 	glewInit();
 #endif
 
-	rubixu3 = new Rubixu3;
+	//SDL_SetRelativeMouseMode(SDL_TRUE);
+	//SDL_ShowCursor(1);
+
+	rubixu3 = new Rubixu3(this);
 	render = new RenderEngine(this);
 	input = new InputEngine(this);
 	
@@ -137,6 +140,7 @@ void Rubixu::Loop()
 		time1 = std::chrono::high_resolution_clock::now();
 		Keyboard();
 		Render();
+		rubixu3->Loop();
 		time2 = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<float> time_span = std::chrono::duration_cast<std::chrono::duration<float>>(time2 - time1);
 		deltaTime = time_span.count();

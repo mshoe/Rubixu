@@ -26,8 +26,6 @@ public:
 	void IdleUpdate();
 	void Render();
 
-
-
 	//SDL
 	// Our SDL_Window ( just like with SDL2 wihout OpenGL)
 	SDL_Window *mainWindow;

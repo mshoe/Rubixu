@@ -1,3 +1,12 @@
-﻿  Rubixu3.cpp
+﻿  TextEngine.cpp
+  Rubixu3.cpp
+  Rubixu.cpp
+  main.cpp
+  InputEngine.cpp
+  Face.cpp
+  Cube.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  RenderEngine.cpp
   Rubixu.vcxproj -> C:\Users\mxuor\Documents\Year 1\Summer 2016\Rubixu\Rubixu\Debug\Rubixu.exe
   Rubixu.vcxproj -> C:\Users\mxuor\Documents\Year 1\Summer 2016\Rubixu\Rubixu\Debug\Rubixu.pdb (Partial PDB)

@@ -1,6 +1,5 @@
 #pragma once
 #include "Classes.h"
-#include "Face.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -39,18 +38,25 @@ public:
 	glm::quat rotation;
 	float scale = 1.f;
 
-	glm::mat4 translationMatrix;
+	/*glm::mat4 translationMatrix;
 	glm::mat4 rotationMatrix;
-	glm::mat4 scaleMatrix;
+	glm::mat4 scaleMatrix;*/
+
+	glm::mat4 modelMatrix;
 
 	void Transform(glm::vec3 translation, glm::quat rotation, float scale);
 	void Translate(glm::vec3 translation);
 	void Rotate(glm::quat rotation);
 	void Scale(float scale);
 	void rotateAround(glm::quat rotation, glm::vec3 point);
+	void updateModelMatrix();
 	std::vector<GLfloat> outputVertices();
 
 	std::vector<GLfloat> *vertices = NULL;
+
+	// Rotation values
+	
+
 private:
 	glm::vec3 color0;
 	glm::vec3 color1;

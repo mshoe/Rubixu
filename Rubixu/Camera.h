@@ -15,13 +15,15 @@ enum Camera_Movement {
 	FORWARD,
 	BACKWARD,
 	LEFT,
-	RIGHT
+	RIGHT,
+	UP,
+	DOWN
 };
 
 // Default camera values
 const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 5.0f;
+const GLfloat SPEED = 20.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
 
@@ -81,7 +83,11 @@ public:
 			this->Position -= this->Right * velocity;
 		if (direction == RIGHT)
 			this->Position += this->Right * velocity;
-		std::cout << "Pos : (" << this->Position.x << ", " << this->Position.y << ", " << this->Position.z << ")" << std::endl;
+		if (direction == UP)
+			this->Position += this->Up * velocity;
+		if (direction == DOWN)
+			this->Position -= this->Up * velocity;
+		//std::cout << "Pos : (" << this->Position.x << ", " << this->Position.y << ", " << this->Position.z << ")" << std::endl;
 		//std::cout << deltaTime << std::endl;
 	}
 

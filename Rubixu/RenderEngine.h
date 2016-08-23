@@ -32,8 +32,8 @@ public:
 	void zoom(GLfloat zoom_value);
 
 	// World
-	glm::mat4 *model = NULL;
-	void rotate3(float angle, float x, float y, float z);
+	glm::mat4 modelMatrix;
+	glm::mat4 rotate3(glm::mat4 model, float angle, float x, float y, float z);
 
 	// Cubes
 	void RenderRubixu();
@@ -42,12 +42,12 @@ public:
 private:
 	Rubixu *rubixu = NULL;
 	Rubixu3 *rubixu3 = NULL;
-	TextEngine *text = NULL;
+	//TextEngine *text = NULL;
 	Camera *camera = NULL;
 
 	// Shader
 	Shader *rubixuShader = NULL;
 
 	// Vertex array
-	GLuint VAO, VBO, EBO;
+	//GLuint VAO, VBO, EBO;
 };

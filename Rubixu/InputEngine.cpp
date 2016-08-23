@@ -32,68 +32,96 @@ void InputEngine::Keyboard()
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
 			case SDLK_r:
-				if (event.key.keysym.mod && KMOD_SHIFT) {
-					rubixu->rubixu3->Ri();
-					std::cout << "shift + r" << std::endl;
-				}
-				else {
-					rubixu->rubixu3->R();
-					std::cout << "r" << std::endl;
+				if (rubixu->rubixu3->rotatingFace == 0 && !rubixu->rubixu3->scramble) {
+					if (event.key.keysym.mod && KMOD_SHIFT) {
+						rubixu->rubixu3->rotatingFace = 2;
+						std::cout << "shift + r" << std::endl;
+					}
+					else {
+						rubixu->rubixu3->rotatingFace = 1;
+						std::cout << "r" << std::endl;
+					}
 				}
 				break;
 			case SDLK_l:
-				if (event.key.keysym.mod && KMOD_SHIFT) {
-					rubixu->rubixu3->Li();
-					std::cout << "shift + l" << std::endl;
-				}
-				else {
-					rubixu->rubixu3->L();
-					std::cout << "l" << std::endl;
+				if (rubixu->rubixu3->rotatingFace == 0 && !rubixu->rubixu3->scramble) {
+					if (event.key.keysym.mod && KMOD_SHIFT) {
+						rubixu->rubixu3->rotatingFace = 4;
+						std::cout << "shift + l" << std::endl;
+					}
+					else {
+						rubixu->rubixu3->rotatingFace = 3;
+						std::cout << "l" << std::endl;
+					}
 				}
 				break;
 			case SDLK_u:
-				if (event.key.keysym.mod && KMOD_SHIFT) {
-					rubixu->rubixu3->Ui();
-					std::cout << "shift + u" << std::endl;
-				}
-				else {
-					rubixu->rubixu3->U();
-					std::cout << "u" << std::endl;
+				if (rubixu->rubixu3->rotatingFace == 0 && !rubixu->rubixu3->scramble) {
+					if (event.key.keysym.mod && KMOD_SHIFT) {
+						rubixu->rubixu3->rotatingFace = 6;
+						std::cout << "shift + u" << std::endl;
+					}
+					else {
+						rubixu->rubixu3->rotatingFace = 5;
+						std::cout << "u" << std::endl;
+					}
 				}
 				break;
-			case SDLK_d:
-				if (event.key.keysym.mod && KMOD_SHIFT) {
-					rubixu->rubixu3->Di();
-					std::cout << "shift + d" << std::endl;
-				}
-				else {
-					rubixu->rubixu3->D();
-					std::cout << "d" << std::endl;
+			case SDLK_c:
+				if (rubixu->rubixu3->rotatingFace == 0 && !rubixu->rubixu3->scramble) {
+					if (event.key.keysym.mod && KMOD_SHIFT) {
+						rubixu->rubixu3->rotatingFace = 8;
+						std::cout << "shift + c" << std::endl;
+					}
+					else {
+						rubixu->rubixu3->rotatingFace = 7;
+						std::cout << "c" << std::endl;
+					}
 				}
 				break;
 			case SDLK_f:
-				if (event.key.keysym.mod && KMOD_SHIFT) {
-					rubixu->rubixu3->Fi();
-					std::cout << "shift + f" << std::endl;
-				}
-				else {
-					rubixu->rubixu3->F();
-					std::cout << "f" << std::endl;
+				if (rubixu->rubixu3->rotatingFace == 0 && !rubixu->rubixu3->scramble) {
+					if (event.key.keysym.mod && KMOD_SHIFT) {
+						rubixu->rubixu3->rotatingFace = 10;
+						std::cout << "shift + f" << std::endl;
+					}
+					else {
+						rubixu->rubixu3->rotatingFace = 9;
+						std::cout << "f" << std::endl;
+					}
 				}
 				break;
 			case SDLK_b:
-				if (event.key.keysym.mod && KMOD_SHIFT) {
-					rubixu->rubixu3->Bi();
-					std::cout << "shift + b" << std::endl;
-				}
-				else {
-					rubixu->rubixu3->B();
-					std::cout << "b" << std::endl;
+				if (rubixu->rubixu3->rotatingFace == 0 && !rubixu->rubixu3->scramble) {
+					if (event.key.keysym.mod && KMOD_SHIFT) {
+						rubixu->rubixu3->rotatingFace = 12;
+						std::cout << "shift + b" << std::endl;
+					}
+					else {
+						rubixu->rubixu3->rotatingFace = 11;
+						std::cout << "b" << std::endl;
+					}
 				}
 				break;
-			case SDLK_SPACE:
+			/*case SDLK_UP:
+				rubixu->render->moveCameraPosition(FORWARD, rubixu->deltaTime);
+				break;
+			case SDLK_LEFT:
+				rubixu->render->moveCameraPosition(LEFT, rubixu->deltaTime);
+				break;
+			case SDLK_DOWN:
+				rubixu->render->moveCameraPosition(BACKWARD, rubixu->deltaTime);
+				break;
+			case SDLK_RIGHT:
+				rubixu->render->moveCameraPosition(RIGHT, rubixu->deltaTime);
+				break;*/
+			case SDLK_h:
 				stop_camera_direction = !stop_camera_direction;
 				std::cout << "space" << std::endl;
+				break;
+			case SDLK_p:
+				rubixu->rubixu3->scramble = !rubixu->rubixu3->scramble;
+				std::cout << "s" << std::endl;
 				break;
 			default:
 				break;
@@ -101,11 +129,47 @@ void InputEngine::Keyboard()
 		case SDL_MOUSEMOTION:
 			// for some reason mouse goes crazy after you press a button
 			// here is a ghetto solution
-			//if (glm::abs(event.motion.xrel) < 100 && glm::abs(event.motion.yrel < 100) && !stop_camera_direction)
-			//std::cout << "Mouse : (" << event.motion.xrel << ", " << event.motion.yrel << ")" << std::endl;
+			if (glm::abs(event.motion.xrel) < 100 && glm::abs(event.motion.yrel < 100) && !stop_camera_direction)
+				rubixu->render->moveCameraDirection(event.motion.xrel, -event.motion.yrel, false);
+			/*if (event.motion.x > 795)
+				rubixu->render->moveCameraDirection(5, 0, false);
+			if (event.motion.x < 5)
+				rubixu->render->moveCameraDirection(-5, 0, false);
+			if (event.motion.y > 595)
+				rubixu->render->moveCameraDirection(0, 5, false);
+			if (event.motion.y < 5)
+				rubixu->render->moveCameraDirection(0, -5, false);*/
+			//std::cout << "Mouse : (" << event.motion.x << ", " << event.motion.y << ")" << std::endl;
 			break;
 		default:
 			break;
 		}
+	}
+
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+
+	if (state[SDL_SCANCODE_W])
+	{
+		rubixu->render->moveCameraPosition(FORWARD, rubixu->deltaTime);
+	}
+	if (state[SDL_SCANCODE_S])
+	{
+		rubixu->render->moveCameraPosition(BACKWARD, rubixu->deltaTime);
+	}
+	if (state[SDL_SCANCODE_A])
+	{
+		rubixu->render->moveCameraPosition(LEFT, rubixu->deltaTime);
+	}
+	if (state[SDL_SCANCODE_D])
+	{
+		rubixu->render->moveCameraPosition(RIGHT, rubixu->deltaTime);
+	}
+	if (state[SDL_SCANCODE_SPACE])
+	{
+		rubixu->render->moveCameraPosition(UP, rubixu->deltaTime);
+	}
+	if (state[SDL_SCANCODE_Q])
+	{
+		rubixu->render->moveCameraPosition(DOWN, rubixu->deltaTime);
 	}
 }

@@ -17,6 +17,7 @@ public:
 
 private:
 	Rubixu *rubixu = NULL;
+	Camera *camera = NULL;
 
 	bool stop_camera_direction = false;
 };

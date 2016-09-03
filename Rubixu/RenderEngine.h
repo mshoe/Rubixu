@@ -33,21 +33,25 @@ public:
 
 	// World
 	glm::mat4 modelMatrix;
-	glm::mat4 rotate3(glm::mat4 model, float angle, float x, float y, float z);
+	void rotate3(glm::quat);
 
 	// Cubes
 	void RenderRubixu();
 	void Render();
 
+	Camera *camera = NULL;
+
 private:
 	Rubixu *rubixu = NULL;
 	Rubixu3 *rubixu3 = NULL;
+	Cube *light = NULL;
 	//TextEngine *text = NULL;
-	Camera *camera = NULL;
+	
 
-	// Shader
+	// Shaders
 	Shader *rubixuShader = NULL;
+	Shader *lampShader = NULL;
 
 	// Vertex array
-	//GLuint VAO, VBO, EBO;
+	GLuint VAO, lightVAO;
 };

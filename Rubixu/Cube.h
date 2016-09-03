@@ -23,6 +23,7 @@ struct Cube
 {
 public:
 	Cube() { initVertices(); };
+	Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, float scale);
 	Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face1, float scale);
 	Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face1, glm::vec3 color2, int face2, float scale);
 	Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face1, glm::vec3 color2, int face2, glm::vec3 color3, int face3, float scale);
@@ -53,15 +54,14 @@ public:
 	std::vector<GLfloat> outputVertices();
 
 	std::vector<GLfloat> *vertices = NULL;
-
-	// Rotation values
 	
-
-private:
+	// colors
 	glm::vec3 color0;
 	glm::vec3 color1;
 	glm::vec3 color2;
 	glm::vec3 color3;
 	glm::vec3 color4;
 	glm::vec3 color5;
+
+	
 };

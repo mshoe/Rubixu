@@ -3,6 +3,7 @@
 InputEngine::InputEngine(Rubixu * rubixu)
 {
 	this->rubixu = rubixu;
+	this->camera = rubixu->render->camera;
 	Init();
 }
 
@@ -123,14 +124,26 @@ void InputEngine::Keyboard()
 				rubixu->rubixu3->scramble = !rubixu->rubixu3->scramble;
 				std::cout << "s" << std::endl;
 				break;
+			case SDLK_ESCAPE:
+				rubixu->loop = false;
+				break;
 			default:
 				break;
 			}
 		case SDL_MOUSEMOTION:
 			// for some reason mouse goes crazy after you press a button
 			// here is a ghetto solution
-			if (glm::abs(event.motion.xrel) < 100 && glm::abs(event.motion.yrel < 100) && !stop_camera_direction)
-				rubixu->render->moveCameraDirection(event.motion.xrel, -event.motion.yrel, false);
+			if (event.button.button == 1) {
+				rubixu->rubixu3->RotateAll(glm::quat(glm::vec3(event.motion.yrel * glm::radians(1.f), event.motion.xrel * glm::radians(1.f), 0)));
+				//if (glm::abs(event.motion.yrel) > glm::abs(event.motion.xrel))
+					//camera->rotateAround(glm::quat(glm::vec3(-event.motion.yrel * glm::radians(1.f), 0, 0)), glm::vec3(0, 0, 0));
+				//else if (glm::abs(event.motion.xrel) > glm::abs(event.motion.yrel))
+					//camera->rotateAround(glm::quat(glm::vec3(0, -event.motion.xrel * glm::radians(1.f), 0)), glm::vec3(0, 0, 0));
+				//std::cout << "MOUSE PRESSED" << std::endl;
+
+			}
+			//if (glm::abs(event.motion.xrel) < 100 && glm::abs(event.motion.yrel < 100) && !stop_camera_direction)
+			//	rubixu->render->moveCameraDirection(event.motion.xrel, -event.motion.yrel, true);
 			/*if (event.motion.x > 795)
 				rubixu->render->moveCameraDirection(5, 0, false);
 			if (event.motion.x < 5)

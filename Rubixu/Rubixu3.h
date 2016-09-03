@@ -43,6 +43,7 @@ public:
 	bool scramble;
 
 	void Rotate();
+	void RotateAll(glm::quat);
 
 	float R();
 	float Ri();
@@ -60,6 +61,9 @@ public:
 	void applyRotations(int a, int b, int c, int d, int e, int f, int g, int h);
 	std::vector<Cube*> *cubes;
 	std::vector<Cube*> *rotatedCubes;
+
+	glm::vec3 Up, Front, Left, Right, Back, Down;
+	glm::mat4 modelMatrix;
 
 	int rotatingFace;
 	float totalRotation;

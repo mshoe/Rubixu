@@ -23,6 +23,10 @@ bool Rubixu::Init()
 	image_width = 800;
 	image_height = 600;
 
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
+	glEnable(GL_MULTISAMPLE);
+
 	// Create our window centered at 512x512 resolution
 	mainWindow = SDL_CreateWindow(programName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		image_width, image_height, SDL_WINDOW_OPENGL);
@@ -52,19 +56,29 @@ bool Rubixu::Init()
 
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
 	//SDL_ShowCursor(1);
+	light = new Cube(glm::vec3(3, 3, 3), glm::quat(1, 0, 0, 0), glm::vec3(1.f, 1.f, 1.f), 1.f);
 
 	rubixu3 = new Rubixu3(this);
 	render = new RenderEngine(this);
 	input = new InputEngine(this);
 	
+	
+
+	//SDL_SetWindowFullscreen(mainWindow, SDL_WINDOW_FULLSCREEN);
+
 	return true;
 }
 
 void Rubixu::CleanUp()
 {
-	delete render;
-	delete input;
-	delete rubixu3;
+	if (render != NULL)
+		delete render;
+	if (input != NULL)
+		delete input;
+	if (rubixu3 != NULL)
+		delete rubixu3;
+	if (light != NULL)
+		delete light;
 
 	// Delete our OpengL context
 	SDL_GL_DeleteContext(mainContext);
@@ -135,6 +149,7 @@ void Rubixu::PrintSDL_GL_Attributes()
 void Rubixu::Loop()
 {
 	deltaTime = 0;
+	totalTime = 0;
 	while (loop)
 	{
 		time1 = std::chrono::high_resolution_clock::now();
@@ -144,5 +159,6 @@ void Rubixu::Loop()
 		time2 = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<float> time_span = std::chrono::duration_cast<std::chrono::duration<float>>(time2 - time1);
 		deltaTime = time_span.count();
+		totalTime += deltaTime;
 	}
 }

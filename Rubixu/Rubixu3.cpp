@@ -54,6 +54,13 @@ void Rubixu3::Init()
 	totalRotation = 0.f;
 	speed = 2.f;
 	scramble = false;
+	modelMatrix = glm::mat4(1.f);
+	Front = glm::vec3(0, 0, 1);
+	Back = glm::vec3(0, 0, -1);
+	Up = glm::vec3(0, 1, 0);
+	Down = glm::vec3(0, -1, 0);
+	Right = glm::vec3(1, 0, 0);
+	Left = glm::vec3(-1, 0, 0);
 }
 
 void Rubixu3::CleanUp()
@@ -189,13 +196,24 @@ void Rubixu3::Rotate()
 	}
 }
 
+void Rubixu3::RotateAll(glm::quat quat)
+{
+	modelMatrix = glm::toMat4(quat) * modelMatrix;
+	Up = quat * Up;
+	Down = quat * Down;
+	Front = quat * Front;
+	Back = quat * Back;
+	Right = quat * Right;
+	Left = quat * Left;
+}
+
 float Rubixu3::R()
 {
 	float rotation = glm::radians(-90.f) * rubixu->deltaTime * speed;
 	if (glm::abs(totalRotation + rotation) > glm::radians(90.f))
 		rotation = glm::radians(-90.f) - totalRotation;
 	for (int i = 2; i < 27; i += 3) {
-		(*rotatedCubes)[i]->rotateAround(glm::quat(glm::vec3(rotation, 0, 0)), glm::vec3(1, 0, 0));
+		(*rotatedCubes)[i]->rotateAround(glm::quat(glm::vec3(rotation, 0, 0)), glm::vec3(-1, 0, 0));
 		(*rotatedCubes)[i]->updateModelMatrix();
 	}
 

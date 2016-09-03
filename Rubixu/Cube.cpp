@@ -1,5 +1,21 @@
 #include "Cube.h"
 
+Cube::Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color, float scale)
+{
+	// Color all faces
+	initColor(color, 0);
+	initColor(color, 1);
+	initColor(color, 2);
+	initColor(color, 3);
+	initColor(color, 4);
+	initColor(color, 5);
+
+	initVertices();
+
+	Transform(translation, rotation, scale);
+	updateModelMatrix();
+}
+
 Cube::Cube(glm::vec3 translation, glm::quat rotation, glm::vec3 color1, int face1, float scale)
 {
 	// Figure out where the colors go
@@ -312,7 +328,7 @@ void Cube::Scale(float scale)
 
 void Cube::rotateAround(glm::quat rotation, glm::vec3 point)
 {
-	glm::vec3 temp = translation;
+	//glm::vec3 temp = translation;
 	Translate(-point);
 	glm::vec3 temp2 = rotation * translation;
 	translation = temp2 + point;
@@ -333,46 +349,16 @@ void Cube::updateModelMatrix()
 
 std::vector<GLfloat> Cube::outputVertices()
 {
-	//glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-
 	std::vector<GLfloat> temp_vertices(4 * 3 * 2 * 6);
 
 	for (int i = 0; i < 24; i++) {
-		/*glm::vec4 test(*/
 		temp_vertices[i * 3 * 2 + 0] = (*vertices)[i * 3 * 2 + 0];
 		temp_vertices[i * 3 * 2 + 1] = (*vertices)[i * 3 * 2 + 1];
 		temp_vertices[i * 3 * 2 + 2] = (*vertices)[i * 3 * 2 + 2];
-		/*	1.f
-		);
-		test = modelMatrix * test;
-		temp_vertices[i * 3 * 2 + 0] = test.x;
-		temp_vertices[i * 3 * 2 + 1] = test.y;
-		temp_vertices[i * 3 * 2 + 2] = test.z;*/
 		temp_vertices[i * 3 * 2 + 3] = (*vertices)[i * 3 * 2 + 3];
 		temp_vertices[i * 3 * 2 + 4] = (*vertices)[i * 3 * 2 + 4];
 		temp_vertices[i * 3 * 2 + 5] = (*vertices)[i * 3 * 2 + 5];
 	}
 
 	return temp_vertices;
-	//glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-
-	/*std::vector<GLfloat> temp_vertices(4 * 3 * 2 * 6);
-
-	for (int i = 0; i < 24; i++) {
-		glm::vec4 test(
-			(*vertices)[i * 3 * 2 + 0],
-			(*vertices)[i * 3 * 2 + 1],
-			(*vertices)[i * 3 * 2 + 2],
-			1.f
-		);
-		test = modelMatrix * test;
-		temp_vertices[i * 3 * 2 + 0] = test.x;
-		temp_vertices[i * 3 * 2 + 1] = test.y;
-		temp_vertices[i * 3 * 2 + 2] = test.z;
-		temp_vertices[i * 3 * 2 + 3] = (*vertices)[i * 3 * 2 + 3];
-		temp_vertices[i * 3 * 2 + 4] = (*vertices)[i * 3 * 2 + 4];
-		temp_vertices[i * 3 * 2 + 5] = (*vertices)[i * 3 * 2 + 5];
-	}
-
-	return temp_vertices;*/
 }

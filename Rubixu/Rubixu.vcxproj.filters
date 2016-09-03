@@ -45,6 +45,9 @@
     <ClInclude Include="Rubixu3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -74,6 +77,18 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\shader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\lamp.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\lamp.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\lighting.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\lighting.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

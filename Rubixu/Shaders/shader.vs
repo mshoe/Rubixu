@@ -4,12 +4,12 @@ layout (location = 1) in vec3 color;	// The color variable has attribute positio
   
 out vec3 ourColor; // Output a color to the fragment shader
 
-uniform mat4 modelCube;
+uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main()
 {
-    gl_Position = projection * view * modelCube * vec4(position, 1.0);
+    gl_Position = projection * view * model * vec4(position, 1.0);
     ourColor = color; // Set ourColor to the input color we got from the vertex data
 }       

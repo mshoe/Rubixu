@@ -40,15 +40,19 @@ public:
 	void CheckSDLError(int line);
 
 	// Engines
-	RenderEngine *render;
-	InputEngine *input;
+	RenderEngine *render = NULL;
+	InputEngine *input = NULL;
 
 	// Rubixu Cube
-	Rubixu3 *rubixu3;
+	Rubixu3 *rubixu3 = NULL;
+
+	// Light Source
+	Cube *light = NULL;
 
 	std::chrono::high_resolution_clock::time_point time1;
 	std::chrono::high_resolution_clock::time_point time2;
 	float deltaTime;
+	float totalTime;
 
 	void Loop();
 	bool loop = true;

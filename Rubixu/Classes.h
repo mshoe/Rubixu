@@ -8,3 +8,5 @@ class Shader;
 
 class Rubixu3;
 struct Cube;
+
+struct Material;

@@ -16,16 +16,23 @@ void RenderEngine::Init()
 	CleanUp();
 
 	rubixu3 = rubixu->rubixu3;
-	camera = new Camera(glm::vec3(5.0f, 5.0f, 10.0f));
-	camera->ProcessMouseMovement(-100, -100);
+	light = rubixu->light;
+	camera = new Camera(glm::vec3(0.0f, 0.0f, 10.0f));
 
+	//modelMatrix = glm::mat4(1.f);
+
+	//camera->ProcessMouseMovement(-100, -100);
+	
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
 
-	rubixuShader = new Shader("..\\Rubixu\\Shaders\\shader.vs", "..\\Rubixu\\Shaders\\shader.frag");
+	rubixuShader = new Shader("..\\Rubixu\\Shaders\\lighting.vs", "..\\Rubixu\\Shaders\\lighting.frag");
+	lampShader = new Shader("..\\Rubixu\\Shaders\\lamp.vs", "..\\Rubixu\\Shaders\\lamp.frag");
 
-	(*rubixuShader).Use();
+	//(*rubixuShader).Use();
 	RenderRubixu();
+
+	
 	
 	//rotate3(45.f, 1.f, 1.f, 0.f);
 }
@@ -36,16 +43,19 @@ void RenderEngine::CleanUp()
 		Shader *temp = rubixuShader;
 		delete temp;
 	}
+	if (lampShader != NULL) {
+		Shader *temp = lampShader;
+		delete temp;
+	}
 	if (camera != NULL) {
 		Camera *temp = camera;
 		delete temp;
 	}
 }
 
-glm::mat4 RenderEngine::rotate3(glm::mat4 model, float angle, float x, float y, float z)
+void RenderEngine::rotate3(glm::quat quat)
 {
-	model = glm::rotate(model, glm::radians(angle), glm::vec3(x, y, z));
-	return model;
+	modelMatrix = glm::toMat4(quat) * modelMatrix;
 }
 
 void RenderEngine::zoom(GLfloat zoom_value)
@@ -82,72 +92,121 @@ void RenderEngine::RenderRubixu()
 		indices[i * 6 + 5] = i * 4 + 3;
 	}
 
-	std::vector<GLfloat> vertices(4 * 3 * 2 * 6 * 27);
+	// position = 0, normal = 1, color = 2
+	std::vector<GLfloat> vertices(4 * 3 * 3 * 6 * 27);
 	for (int i = 0; i < 27; i++) {
 		std::vector<GLfloat> temp = (*rubixu3->cubes)[i]->outputVertices();
-		for (int j = 0; j < 4 * 3 * 2 * 6; j++)
-			vertices[i * 4 * 3 * 2 * 6 + j] = temp[j];
+		/*for (int j = 0; j < 4 * 3 * 3 * 6; j++)
+			vertices[i * 4 * 3 * 3 * 6 + j] = temp[j];*/
+		for (int j = 0; j < 6; j++) {
+			// calculate the normal of the face
+			glm::vec3 a(
+				temp[j * 4 * 3 * 2 + 0], 
+				temp[j * 4 * 3 * 2 + 1], 
+				temp[j * 4 * 3 * 2 + 2]
+			);
+
+			glm::vec3 b(
+				temp[j * 4 * 3 * 2 + 6 + 0], 
+				temp[j * 4 * 3 * 2 + 6 + 1], 
+				temp[j * 4 * 3 * 2 + 6 + 2]
+			);
+
+			glm::vec3 c(
+				temp[j * 4 * 3 * 2 + 12 + 0],
+				temp[j * 4 * 3 * 2 + 12 + 1],
+				temp[j * 4 * 3 * 2 + 12 + 2]
+			);
+
+			glm::vec3 normal = /*glm::normalize*/(glm::cross(c - a, b - a));
+
+			for (int k = 0; k < 4; k++) {
+				// insert them and other vertex attributes into vertices
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 0] = temp[j * 4 * 3 * 2 + k * 3 * 2 + 0];
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 1] = temp[j * 4 * 3 * 2 + k * 3 * 2 + 1];
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 2] = temp[j * 4 * 3 * 2 + k * 3 * 2 + 2];
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 3] = normal.x;
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 4] = normal.y;
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 5] = normal.z;
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 6] = temp[j * 4 * 3 * 2 + k * 3 * 2 + 3];
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 7] = temp[j * 4 * 3 * 2 + k * 3 * 2 + 4];
+				vertices[i * 4 * 3 * 3 * 6 + j * 4 * 3 * 3 + k * 3 * 3 + 8] = temp[j * 4 * 3 * 2 + k * 3 * 2 + 5];
+			}
+		}
 	}
 
-	GLuint VAO, VBO, EBO;
+	GLuint VBO, EBO;
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	std::cout << "test 2" << std::endl;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
-	std::cout << "test 3" << std::endl;
 	glBindVertexArray(VAO);
 
-	std::cout << "test 4" << std::endl;
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	std::cout << "test 4.5" << std::endl;
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), &vertices.front(), GL_STATIC_DRAW);
-	std::cout << "test 5" << std::endl;
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices.front(), GL_STATIC_DRAW);
-	std::cout << "test 6" << std::endl;
+
+	// Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	// Normal attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	// Color attribute
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
+		
+	glBindVertexArray(0);
+	
+	std::cout << "light source..." << std::endl;
+	std::vector<GLfloat> lightVert(4 * 3 * 2 * 6);
+	lightVert = light->outputVertices();
+
+	//std::cout << lightVert.size() << std::endl;
+
+	std::vector<GLuint> lightIndices(6 * 6);
+	for (int i = 0; i < 6; i++) {
+		lightIndices[i * 6 + 0] = i * 4 + 0;
+		lightIndices[i * 6 + 1] = i * 4 + 1;
+		lightIndices[i * 6 + 2] = i * 4 + 3;
+		lightIndices[i * 6 + 3] = i * 4 + 1;
+		lightIndices[i * 6 + 4] = i * 4 + 2;
+		lightIndices[i * 6 + 5] = i * 4 + 3;
+	}
+
+	GLuint lightVBO, lightEBO;
+	glDeleteVertexArrays(1, &lightVAO);
+	glDeleteBuffers(1, &lightVBO);
+	glDeleteBuffers(1, &lightEBO);
+	glGenVertexArrays(1, &lightVAO);
+	glGenBuffers(1, &lightVBO);
+	glGenBuffers(1, &lightEBO);
+	glBindVertexArray(lightVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glBufferData(GL_ARRAY_BUFFER, lightVert.size() * sizeof(GLfloat), &lightVert.front(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, lightIndices.size() * sizeof(GLuint), &lightIndices.front(), GL_STATIC_DRAW);
+
+	// Set the vertex attributes (only position data for our lamp)
 	// Position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
-	std::cout << "test 7" << std::endl;
+
 	// Color attribute
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
-	std::cout << "test 8" << std::endl;
-	glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
-	std::cout << "test 9" << std::endl;
-		
-	glBindVertexArray(0);
-	/*glDeleteVertexArrays(1, &VAO);*/
-	/*glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);*/
 
-	/*glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);*/
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
-	//glBindVertexArray(VAO);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//glBufferData(GL_ARRAY_BUFFER, (vertices).size() * sizeof(GLfloat), &vertices.front(), GL_STATIC_DRAW);
-
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices.front(), GL_STATIC_DRAW);
-
-	//// Position attribute
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-	//glEnableVertexAttribArray(0);
-
-	//// Color attribute
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	//glEnableVertexAttribArray(1);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
-
-	//glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
+	glBindVertexArray(0); 
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	std::cout << "...complete" << std::endl;
@@ -159,10 +218,19 @@ void RenderEngine::Render()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	(*rubixuShader).Use();
+	/*light->translation.x = 4 * glm::cos(0.2f * rubixu->totalTime);
+	light->translation.z = 4 * glm::sin(0.2f * rubixu->totalTime);
+	light->updateModelMatrix();*/
 
-	float angle = rubixu->deltaTime * 45.f;
-	/*rotate3(angle, 0.f, 1.f, 0.f);*/
+	float angle = rubixu->deltaTime * glm::radians(45.f);
+
+	//rotate3(glm::quat(glm::vec3(0, angle, 0)));
+	//camera->rotateAround(glm::quat(glm::vec3(angle, 0, 0)), glm::vec3(0,0,0));
+
+	rubixuShader->Use();
+	GLint lightColorLoc = glGetUniformLocation(rubixuShader->Program, "lightColor");
+	glUniform3f(lightColorLoc, rubixu->light->color0[0], rubixu->light->color0[1], rubixu->light->color0[2]);
+	//glUniform3f(lightColorLoc, 1.f, 1.f, 1.f);
 
 	// view
 	GLuint viewLoc = glGetUniformLocation((*rubixuShader).Program, "view");
@@ -174,27 +242,46 @@ void RenderEngine::Render()
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	// model
-	//glm::mat4 model;
-	GLuint modelCubeLoc = glGetUniformLocation((*rubixuShader).Program, "modelCube");
-	GLuint modelRubixuLoc = glGetUniformLocation((*rubixuShader).Program, "modelRubixu");
+	GLuint modelLoc = glGetUniformLocation((*rubixuShader).Program, "model");
 
-	//modelMatrix = rotate3(modelMatrix, angle, 0.f, 1.f, 0.f);
+	// world lamp coordinates
+	glm::vec3 lightPos = rubixu->light->translation;
+	GLint lightPosLoc = glGetUniformLocation(rubixuShader->Program, "lightPos");
+	glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 
-	//glUniformMatrix4fv(modelRubixuLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+	// world camera coordinates
+	GLint viewPosLoc = glGetUniformLocation(rubixuShader->Program, "viewPos");
+	glUniform3f(viewPosLoc, camera->Position.x, camera->Position.y, camera->Position.z);
+
 	for (int i = 0; i < 27; i++) {
-		//(*rubixu3->cubes)[i]->modelMatrix = rotate3((*rubixu3->cubes)[i]->modelMatrix, angle, 0.f, 1.f, 0.f);
-		//(*rubixu3->cubes)[i]->rotateAround(glm::quat(glm::vec3(0, glm::radians(45.f * rubixu->deltaTime), 0)), glm::vec3(0, 0, 0));
-		//(*rubixu3->cubes)[i]->updateModelMatrix();
-		glUniformMatrix4fv(modelCubeLoc, 1, GL_FALSE, glm::value_ptr(/*(*rubixu3->cubes)[0]->modelMatrix*/(*rubixu3->cubes)[i]->modelMatrix));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(rubixu3->modelMatrix * (*rubixu3->cubes)[i]->modelMatrix));
 		
-		
-		glBindVertexArray(1);
-		glDrawElementsBaseVertex(GL_TRIANGLES, 6 * 6, GL_UNSIGNED_INT, 0, i * 4 * 3 * 2);
-		//TIL: second parameter is indices (elements), 4th parameter is vertex data (xyzrgb)
+		glBindVertexArray(VAO);
+		glDrawElementsBaseVertex(GL_TRIANGLES, 6 * 6, GL_UNSIGNED_INT, 0, i * 4 * 6);
+		//TIL: second parameter is indices count, 5th parameter is offset in elements
 
-		//glDrawElements(GL_TRIANGLES, 4 * 3 * 2 * 6 * 27, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
+
+	// LAMP
+
+	lampShader->Use();
+
+	// view
+	viewLoc = glGetUniformLocation((*lampShader).Program, "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+
+	// perspective
+	projectionLoc = glGetUniformLocation((*lampShader).Program, "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	// model
+	modelLoc = glGetUniformLocation((*lampShader).Program, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(rubixu->light->modelMatrix));
 	
+	glBindVertexArray(lightVAO);
+	glDrawElementsBaseVertex(GL_TRIANGLES, 6 * 6, GL_UNSIGNED_INT, 0, 0);
+	glBindVertexArray(0);
+
 	SDL_GL_SwapWindow(rubixu->mainWindow);
 }

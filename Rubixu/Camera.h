@@ -38,6 +38,9 @@ public:
 	glm::vec3 Up;
 	glm::vec3 Right;
 	glm::vec3 WorldUp;
+
+	glm::quat Rotation;
+
 	// Eular Angles
 	GLfloat Yaw;
 	GLfloat Pitch;
@@ -53,6 +56,7 @@ public:
 		this->WorldUp = up;
 		this->Yaw = yaw;
 		this->Pitch = pitch;
+		this->Rotation = glm::quat(1, 0, 0, 0);
 		this->updateCameraVectors();
 	}
 	// Constructor with scalar values
@@ -62,13 +66,14 @@ public:
 		this->WorldUp = glm::vec3(upX, upY, upZ);
 		this->Yaw = yaw;
 		this->Pitch = pitch;
+		this->Rotation = glm::quat(1, 0, 0, 0);
 		this->updateCameraVectors();
 	}
 
 	// Returns the view matrix calculated using Eular Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix()
 	{
-		return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
+		return glm::lookAt(this->Position, /*this->Position + this->Front*/glm::vec3(0, 0, 0), this->Up);
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -123,6 +128,31 @@ public:
 		if (this->Zoom >= 45.0f)
 			this->Zoom = 45.0f;
 	}
+
+	//void rotateAround(glm::quat rotation, glm::vec3 point)
+	//{
+	//	glm::vec3 temp = Position;
+	//	Position -= point;
+	//	glm::vec3 temp2 = rotation * Position;
+	//	Position = temp2 + point;
+
+	//	Rotation = -rotation * Rotation;
+	//	//Front = glm::normalize(glm::vec3(0, 0, 0) - Position);
+
+	//	//if (Front.y <)
+
+	//	//Right = glm::normalize(glm::cross(Front, Up));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	//	//Up = glm::normalize(glm::cross(Right, Front));
+	//	//Rotate(rotation);
+	//	//glm::vec3 Rotation(Yaw, Pitch, 0);
+	//	//std::cout << Rotation.x << ", " << Rotation.y << ", " << Rotation.z << std::endl;
+	//	//Rotation = -rotation * Rotation;
+	//	//std::cout << Rotation.x << ", " << Rotation.y << ", " << Rotation.z << std::endl;
+	//	//Yaw = Rotation.x;
+	//	//Pitch = Rotation.y;
+	//	
+	//	//updateCameraVectors();
+	//}
 
 private:
 	// Calculates the front vector from the Camera's (updated) Eular Angles
